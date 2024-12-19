@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LogIn</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+        .container {
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+            color: green;
+        }
+        .top-left {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+<a href="index.html" class="top-left">
+    <img src="imagenes/Flecha.jpg" alt="Logo" width="50" height="50">
+</a>
+<div class="container">
+    <h1>Login</h1>
+    <p>Introduce tu nombre de Usuario y Contraseña</p>
+    <form id="loginForm">
+        <input type="text" id="user" name="user" placeholder="Email o Usuario" required>
+        <input type="password" id="password" name="password" placeholder="Contraseña" required>
+        <button type="submit" id="loginbutton">Log in</button>
+    </form>
+    <div id="message" class="message"></div>
+</div>
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(document.getElementById('loginForm'));
+        const user = formData.get('user');
+
+        fetch('http://localhost:8080/dsaApp/users/login', {
+            method: 'POST',
+            body: new URLSearchParams(formData)
+        })
+        .then(response => {
+            if (response.status === 201) {
+                return response.json();
+            } else {
+                throw new Error('Invalid username or password');
+            }
+        })
+        .then(data => {
+             console.log('Data received:', data);
+            document.getElementById('message').textContent = 'Login successful';
+            console.log('Success:', data);
+            localStorage.setItem('username', data.username);
+            localStorage.setItem('id', data.id);
+            if (document.getElementById('message').textContent === 'Login successful') {
+                window.location.href = 'Productos.html';
+            }
+        })
+        .catch((error) => {
+            document.getElementById('message').textContent = error.message;
+            console.error('Error:', error);
+        });
+    });
+</script>
+</body>
+</html>

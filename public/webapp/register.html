@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+        }
+        .container {
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+        .top-left {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
+</head>
+<body>
+<a href="index.html" class="top-left">
+    <img src="imagenes/Flecha.jpg" alt="Logo" width="50" height="50">
+</a>
+<div class="container">
+    <h1>Register</h1>
+    <p>Introduce tu Correo y tu nombre de Usuario</p>
+    <form id="registerForm">
+        <input type="text" id="email" name="email" placeholder="Correo electrónico" required>
+        <input type="text" id="username" name="username" placeholder="Usuario" required>
+        <p>Introduce tu Contraseña</p>
+        <input type="password" id="password" name="password" placeholder="Contraseña" required>
+        <input type="password" id="pwd2" name="pwd2" placeholder="Repita la Contraseña" required>
+        <button type="submit" id="registerButton">Registrarse</button>
+    </form>
+    <div id="message" class="message"></div>
+</div>
+<script>
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if(document.getElementById('pwd2').value === document.getElementById('password').value) {
+            const formData = new FormData(document.getElementById('registerForm'));
+            fetch('http://localhost:8080/dsaApp/users/register', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            })
+                .then(response => {
+                    if (response.status === 201) {
+                        return response.json();
+                    } else {
+                        throw new Error('Registration failed');
+                    }
+                })
+                .then(data => {
+                    document.getElementById('message').textContent = 'Registration successful';
+                    document.getElementById('message').classList.add('success');
+                    console.log('Success:', data);
+                    if (document.getElementById('message').textContent === 'Registration successful') {
+                        window.location.href = 'index.html';
+                    }
+                })
+                .catch((error) => {
+                    document.getElementById('message').textContent = error.message;
+                    document.getElementById('message').classList.add('error');
+                    console.error('Error:', error);
+                });
+        }
+        else{
+            document.getElementById('message').textContent = "Revisa que tu contraseña sea igual";
+        }
+    });
+</script>
+</body>
+</html>
